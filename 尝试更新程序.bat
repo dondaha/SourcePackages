@@ -1,0 +1,6 @@
+chcp 65001
+@echo off
+echo 尝试拉取最新代码...
+.\git\bin\git.exe pull
+echo 回车以退出...
+pause
