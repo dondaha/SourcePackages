@@ -1,3 +1,4 @@
-call .\venv\Scripts\activate
-cd SourcePackages
-python pandalearning.py
+chcp 65001
+title 学习强国
+.\python\python.exe .\SourcePackages\pandalearning.py
+pause
