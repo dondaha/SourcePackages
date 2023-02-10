@@ -3,6 +3,7 @@ import os
 import sys
 import time
 from sys import argv
+# 超时函数相关库
 from func_timeout import func_set_timeout
 import func_timeout
 from func_timeout import FunctionTimedOut, func_timeout
@@ -75,7 +76,6 @@ def start_learn(uid, name):
         driver_login = Mydriver()
         cookies = driver_login.login()
         driver_login.quit()
-        # cookies = login()
         if not cookies:
             print("登录超时")
             return
@@ -129,6 +129,8 @@ def start_learn(uid, name):
 
 def start(nick_name=None):
     nohead, lock, stime, Single = get_argv()
+    info_shread = threads.MyThread("获取更新信息...", version.up_info)
+    info_shread.start()
     user_list = user.list_user(printing=False)
     user.refresh_all_cookies()
     if len(user_list) == 0:
@@ -143,7 +145,7 @@ def start(nick_name=None):
             time.sleep(2)
     for i in range(len(user_list)):
         try:
-            if nick_name is None or nick_name == user_list[i][1] or nick_name == user_list[i][0]:
+            if nick_name == None or nick_name == user_list[i][1] or nick_name == user_list[i][0]:
                 _learn = threads.MyThread(
                     user_list[i][0]+"开始学xi", start_learn, user_list[i][0], user_list[i][1], lock=Single)
                 _learn.start()
@@ -187,7 +189,6 @@ def add_user(chat_id=None):
     driver_login = Mydriver()
     cookies = driver_login.login(chat_id)
     driver_login.quit()
-    # cookies = login(chat_id=chat_id)
     if not cookies:
         gl.pushprint("登录超时。", chat_id=chat_id)
         return

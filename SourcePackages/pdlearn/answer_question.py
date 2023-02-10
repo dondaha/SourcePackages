@@ -1,4 +1,3 @@
-from func_timeout import func_timeout, FunctionTimedOut
 from pdlearn import globalvar
 import time
 import random
@@ -25,21 +24,13 @@ def generate_tiku_data(quiz_type=None, tip=None, option=None, answer=None, quest
 
 
 def find_available_quiz(quiz_type, driver_ans, uid):
-    # 这里有些问题，专项学习一开始会出现 1 2 3 4 5 10，一共6个button
-    # 第一次find_elements_by_css_selector以后只会学到前5页和最后一页，这6页学完以后就会找不到
-    # 这里改动先找最后一个button的页码，然后每次点击，更新pages，模拟手动点击的过程
-    prestr = ".ant-pagination-item"
-    pages = driver_ans.driver.find_elements_by_css_selector(prestr)
-    last = int(pages[len(pages)-1].text)
-    for p in range(0, last, 1):  # (从最后一页开始往前找做题)从前往后找题，专项答题等没有那么离谱
-        pages = driver_ans.driver.find_elements_by_css_selector(prestr)
-        for index in range(0, len(pages), 1):
-            if pages[index].text == str(p+1):
-                time.sleep(0.5)
-                print('进入答题第' + str(p+1) + '页')
-                pages[index].click()
-                time.sleep(0.5)
-                break
+    pages = driver_ans.driver.find_elements_by_css_selector(
+        ".ant-pagination-item")
+    for p in range(0, len(pages), 1):  # (从最后一页开始往前找做题)从前往后找题，专项答题等没有那么离谱
+        time.sleep(0.5)
+        print('进入答题第' + str(p+1) + '页')
+        pages[p].click()
+        time.sleep(0.5)
         dati = []
         if quiz_type == "weekly":  # 寻找可以做的题
             dati = driver_ans.driver.find_elements_by_css_selector(
@@ -206,10 +197,7 @@ def answer_question(quiz_type, cookies, scores, score_all, quiz_xpath, category_
                     if pass_count >= 5:
                         print(
                             "暂时略过已达到 5 次，【 建议您将此题目的题干、提示、选项信息提交到github问题收集issue：https://github.com/TechXueXi/techxuexi-tiku/issues/1 】")
-                        try:
-                            func_timeout(20, lambda: input('等待用户手动答题...完成后请在此按回车...（如果20s内没有反应，程序会自动跳过此题）'))
-                        except FunctionTimedOut:
-                            print("未操作，自动跳过这题")
+                        auto.prompt("等待用户手动答题...完成后请在此按回车...")
                         pass_count = 0
                         continue
                     # if quiz_type == "daily":
@@ -290,10 +278,7 @@ def answer_question(quiz_type, cookies, scores, score_all, quiz_xpath, category_
                                 ##### radio_in_tips = letters[:len_option]
                                 # driver_daily.radio_check(radio_in_tips)
                                 if not gl.nohead:
-                                    try:
-                                        func_timeout(20, lambda: input('等待用户手动答题...完成后请在此按回车...（如果20s内没有反应，程序会自动跳过此题）'))
-                                    except FunctionTimedOut:
-                                        print("未操作，自动跳过这题")
+                                    auto.prompt("等待用户手动答题...完成后请在此按回车...")
                         elif quiz_type == "weekly":
                             options = driver_weekly.radio_get_options()
                             radio_in_tips, radio_out_tips = "", ""
@@ -324,10 +309,7 @@ def answer_question(quiz_type, cookies, scores, score_all, quiz_xpath, category_
                                 ##### radio_in_tips = letters[:len_option]
                                 # driver_weekly.radio_check(radio_in_tips)
                                 if not gl.nohead:
-                                    try:
-                                        func_timeout(20, lambda: input('等待用户手动答题...完成后请在此按回车...（如果20s内没有反应，程序会自动跳过此题）'))
-                                    except FunctionTimedOut:
-                                        print("未操作，自动跳过这题")
+                                    auto.prompt("等待用户手动答题...完成后请在此按回车...")
                         elif quiz_type == "zhuanxiang":
                             options = driver_zhuanxiang.radio_get_options()
                             radio_in_tips, radio_out_tips = "", ""
@@ -358,10 +340,7 @@ def answer_question(quiz_type, cookies, scores, score_all, quiz_xpath, category_
                                 ##### radio_in_tips = letters[:len_option]
                                 # driver_zhuanxiang.radio_check(radio_in_tips)
                                 if not gl.nohead:
-                                    try:
-                                        func_timeout(20, lambda: input('等待用户手动答题...完成后请在此按回车...（如果20s内没有反应，程序会自动跳过此题）'))
-                                    except FunctionTimedOut:
-                                        print("未操作，自动跳过这题")
+                                    auto.prompt("等待用户手动答题...完成后请在此按回车...")
                     elif "单选题" in category:
                         if quiz_type == "daily":
                             options = driver_daily.radio_get_options()
@@ -411,11 +390,7 @@ def answer_question(quiz_type, cookies, scores, score_all, quiz_xpath, category_
                                     ##### radio_in_tips = "B"
                                     # driver_daily.radio_check(radio_in_tips)
                                     if not gl.nohead:
-                                        try:
-                                            func_timeout(20,
-                                                         lambda: input('等待用户手动答题...完成后请在此按回车...（如果20s内没有反应，程序会自动跳过此题）'))
-                                        except FunctionTimedOut:
-                                            print("未操作，自动跳过这题")
+                                        auto.prompt("等待用户手动答题...完成后请在此按回车...")
                         elif quiz_type == "weekly":
                             options = driver_weekly.radio_get_options()
                             if '因此本题选' in tips:
@@ -458,11 +433,7 @@ def answer_question(quiz_type, cookies, scores, score_all, quiz_xpath, category_
                                     ##### radio_in_tips = "B"
                                     # driver_weekly.radio_check(radio_in_tips)
                                     if not gl.nohead:
-                                        try:
-                                            func_timeout(20,
-                                                         lambda: input('等待用户手动答题...完成后请在此按回车...（如果20s内没有反应，程序会自动跳过此题）'))
-                                        except FunctionTimedOut:
-                                            print("未操作，自动跳过这题")
+                                        auto.prompt("等待用户手动答题...完成后请在此按回车...")
                         elif quiz_type == "zhuanxiang":
                             options = driver_zhuanxiang.radio_get_options()
                             if '因此本题选' in tips:
@@ -507,11 +478,7 @@ def answer_question(quiz_type, cookies, scores, score_all, quiz_xpath, category_
                                     ##### radio_in_tips = "B"
                                     # driver_zhuanxiang.radio_check(radio_in_tips)
                                     if not gl.nohead:
-                                        try:
-                                            func_timeout(20,
-                                                         lambda: input('等待用户手动答题...完成后请在此按回车...（如果20s内没有反应，程序会自动跳过此题）'))
-                                        except FunctionTimedOut:
-                                            print("未操作，自动跳过这题")
+                                        auto.prompt("等待用户手动答题...完成后请在此按回车...")
                     else:
                         print("题目类型非法")
                         if quiz_type == "daily":
@@ -525,13 +492,9 @@ def answer_question(quiz_type, cookies, scores, score_all, quiz_xpath, category_
             if scores[quiz_type] >= score_all:
                 print("检测到"+quiz_zh_CN[quiz_type]+"答题分数已满,退出学 xi ")
             else:
-                if quiz_type != "weekly":
-                    print(
-                        "！！！！！没拿到满分，请收集日志反馈错误题目！！！！！https://github.com/TechXueXi/techxuexi-tiku/issues/1")
-                    try:
-                        func_timeout(20, lambda: input('等待用户手动答题...完成后请在此按回车...（如果20s内没有反应，程序会自动跳过此题）'))
-                    except FunctionTimedOut:
-                        print("未操作，自动跳过这题")
+                print(
+                    "！！！！！没拿到满分，请收集日志反馈错误题目！！！！！https://github.com/TechXueXi/techxuexi-tiku/issues/1")
+                auto.prompt("完成后（或懒得弄）请在此按回车...")
                 # log_daily("！！！！！没拿到满分！！！！！")
         if driver_default == None:
             try:
@@ -556,7 +519,7 @@ def daily(cookies, scores, driver_default=None):
 def weekly(cookies, scores, driver_default=None):
     quiz_type = "weekly"
     score_all = const.weekly_all
-    quiz_xpath = '//*[@id="app"]/div/div[2]/div/div[3]/div[2]/div[7]/div[2]/div[2]/div'
+    quiz_xpath = '//*[@id="app"]/div/div[2]/div/div[3]/div[2]/div[6]/div[2]/div[2]/div'
     category_xpath = '//*[@id="app"]/div/div[2]/div/div[4]/div[1]/div[1]'
     answer_question(quiz_type, cookies, scores, score_all,
                     quiz_xpath, category_xpath, driver_default=driver_default)
@@ -565,7 +528,7 @@ def weekly(cookies, scores, driver_default=None):
 def zhuanxiang(cookies, scores, driver_default=None):
     quiz_type = "zhuanxiang"
     score_all = const.zhuanxiang_all
-    quiz_xpath = '//*[@id="app"]/div/div[2]/div/div[3]/div[2]/div[6]/div[2]/div[2]/div'
+    quiz_xpath = '//*[@id="app"]/div/div[2]/div/div[3]/div[2]/div[7]/div[2]/div[2]/div'
     category_xpath = '//*[@id="app"]/div/div[2]/div/div[6]/div[1]/div[1]'
     answer_question(quiz_type, cookies, scores, score_all,
                     quiz_xpath, category_xpath, driver_default=driver_default)

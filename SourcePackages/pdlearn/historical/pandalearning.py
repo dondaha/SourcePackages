@@ -1,7 +1,5 @@
 from pdlearn import dingding
 from pdlearn import user
-from pdlearn.mydriver import Mydriver
-
 
 def user_flag(dd_status, uname):
     if False and dd_status:
@@ -15,7 +13,6 @@ def user_flag(dd_status, uname):
                 driver_login = Mydriver(nohead=False)
                 cookies = driver_login.login()
                 driver_login.quit()
-                # cookies = login()
         else:
             cookies = dingding.dd_login_status(uname)
     a_log = user.get_a_log(uname)
